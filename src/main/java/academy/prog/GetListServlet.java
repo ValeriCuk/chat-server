@@ -20,11 +20,13 @@ import jakarta.servlet.http.*;
 public class GetListServlet extends HttpServlet {
 	
 	private MessageList msgList = MessageList.getInstance();
+	private UsersList usersList = UsersList.getInstance();
 
     @Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String fromStr = req.getParameter("from");
 		String user = req.getParameter("user");
+		usersList.userLoggedIn(user);
 		int from = 0;
 		try {
 			from = Integer.parseInt(fromStr);
