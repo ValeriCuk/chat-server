@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 public class AddServlet extends HttpServlet {
 
 	private MessageList msgList = MessageList.getInstance();
+    private RoomsList rl = RoomsList.getInstance();
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -23,11 +24,23 @@ public class AddServlet extends HttpServlet {
         String bufStr = new String(buf, StandardCharsets.UTF_8);
 
 		Message msg = Message.fromJSON(bufStr);
-		if (msg != null)
-			msgList.add(msg);
-		else
+		if (msg != null) {
+            String movement = req.getParameter("movement");
+            configRoom(msg, movement);
+            msgList.add(msg);
+        }else
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
 	}
+
+    private void configRoom(Message msg, String inOutMovement){
+        System.out.println(inOutMovement);
+        if (inOutMovement == null) return;
+        if (inOutMovement.equals("in")) {
+            rl.addRoom(msg.getRoom(), msg.getFrom());
+        }else if (inOutMovement.equals("out")) {
+            rl.leaveRoom(msg.getRoom(), msg.getFrom());
+        }
+    }
 
 	private byte[] requestBodyToArray(HttpServletRequest req) throws IOException {
         InputStream is = req.getInputStream();

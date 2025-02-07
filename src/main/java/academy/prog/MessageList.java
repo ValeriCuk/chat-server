@@ -3,6 +3,7 @@ package academy.prog;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -28,9 +29,20 @@ public class MessageList {
 	public synchronized String toJSON(int n, String userName) {
 		if (n < 0 || n >= list.size()) return null;
 		List<Message> filteredMessages = list.stream()
-				.filter(a -> a.getTo() == null || a.getTo().equals(userName) || a.getFrom().equals(userName))
+				.filter(a -> getCondition(userName, a))
 				.collect(Collectors.toList());
 		System.out.println(gson.toJson(filteredMessages));
 		return gson.toJson(new JsonMessages(filteredMessages, n));
+	}
+
+	private boolean getCondition(String userName, Message m) {
+		RoomsList rl = RoomsList.getInstance();
+		if (m.getTo() == null && m.getRoom() == null) {
+			return true;//Public
+		} else if (m.getRoom() == null){
+			return  m.getTo().equals(userName) || m.getFrom().equals(userName);//Private
+		} else {
+			return rl.isUserInRoom(m.getRoom(), userName);//IsUserInRoom
+		}
 	}
 }

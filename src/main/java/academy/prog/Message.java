@@ -19,6 +19,7 @@ public class Message {
 	private String from;
 	private String to;
 	private String text;
+	private String room;
 
 	public Message(String from, String text) {
 		this.from = from;
@@ -37,10 +38,25 @@ public class Message {
 	
 	@Override
 	public String toString() {
-		return new StringBuilder().append("[").append(date)
-				.append(", From: ").append(from).append(", To: ").append(to)
-				.append("] ").append(text)
-                .toString();
+		String res = "";
+		if (to == null && room == null) {
+			res = new StringBuilder().append("public -> [").append(date)
+					.append(", From: ").append(from)
+					.append("] ").append(text)
+					.toString();
+		}else if (room == null){
+			res = new StringBuilder().append("private -> [").append(date)
+					.append(", From: ").append(from).append(", To: ").append(to)
+					.append("] ").append(text)
+					.toString();
+		}else{
+			res = new StringBuilder().append("ChatRoom -> [").append(date)
+					.append(", From: ").append(from).append(", Room: ").append(room)
+					.append("] ").append(text)
+					.toString();
+		}
+
+		return res;
 	}
 	
 	public Date getDate() {
@@ -74,4 +90,8 @@ public class Message {
 	public void setText(String text) {
 		this.text = text;
 	}
+
+	public String getRoom() { return room; }
+
+	public void setRoom(String room) { this.room = room; }
 }
